@@ -972,6 +972,9 @@ function startGateway(options) {
       path: req.url,
       headers: proxyHeaders(req, target),
     }, (proxyRes) => {
+      res.on("close", () => {
+        if (!res.writableEnded) proxyReq.destroy();
+      });
       const contentType = String(proxyRes.headers["content-type"] || "");
       if (!shouldInjectHtml(pathname, contentType)) {
         res.writeHead(proxyRes.statusCode || 200, outboundHeaders(proxyRes.headers));
@@ -1014,7 +1017,9 @@ function startGateway(options) {
         res.destroy();
       }
     });
-    proxyReq.setHeader("host", target.host);
+    // Host is already set through proxyHeaders(); setting it again is both
+    // redundant and unsafe (it throws ERR_HTTP_HEADERS_SENT once the request
+    // has been flushed, which took the whole harness down).
     req.pipe(proxyReq);
   }
 
