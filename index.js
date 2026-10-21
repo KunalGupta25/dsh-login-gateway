@@ -61,6 +61,61 @@ function dshHome() {
 function statePath() {
   return path.join(dshHome(), STATE_FILE);
 }
+// ---- upstream harness browser-session bridge -------------------------------
+// dsh >= 0.2 puts its own login wall in front of the loopback listener. After
+// our login wall we forward with host rewritten to the upstream, so we must also
+// present a cookie that dsh itself signed for that authority.
+// Mirrors @deepseek-ai/dsh-client-connection: name is
+// "dsh-auth-" + base64url(sha256(authority)); value is
+// "v1." + base64url(json) + "." + base64url(HMAC-SHA256(secret, body)).
+const DSH_COOKIE_PREFIX = "dsh-auth-";
+const DSH_SESSION_MAX_AGE_MS = 7 * 24 * 3600 * 1000;
+
+function readUpstreamSecret() {
+  const fromEnv = process.env.DSH_BROWSER_SESSION_SECRET;
+  if (fromEnv) return fromEnv.trim();
+  try {
+    const yaml = fs.readFileSync(path.join(dshHome(), ".credentials.yaml"), "utf8");
+    const at = yaml.indexOf("client-connection/browser-session");
+    if (at !== -1) {
+      const match = /secret:\s*([A-Za-z0-9_-]{16,})/.exec(yaml.slice(at));
+      if (match) return match[1];
+    }
+  } catch {
+    // no credentials file yet
+  }
+  return "";
+}
+
+function b64url(buf) {
+  return Buffer.from(buf).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function dshAuthCookie(authority, secret) {
+  if (!authority || !secret) return "";
+  const key = Buffer.from(secret, "base64url");
+  if (key.length !== 32) return "";
+  const name = DSH_COOKIE_PREFIX + b64url(crypto.createHash("sha256").update(authority).digest());
+  const now = Date.now();
+  const body = b64url(
+    Buffer.from(JSON.stringify({ version: 1, authority, issuedAt: now, expiresAt: now + DSH_SESSION_MAX_AGE_MS }), "utf8"),
+  );
+  const sig = b64url(crypto.createHmac("sha256", key).update(body).digest());
+  return `${name}=v1.${body}.${sig}`;
+}
+
+/** Merge our upstream auth cookie into an existing Cookie header. */
+function withUpstreamCookie(existing, target) {
+  const fresh = dshAuthCookie(target.host, readUpstreamSecret());
+  if (!fresh) return existing;
+  const name = fresh.slice(0, fresh.indexOf("="));
+  const kept = String(existing || "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part && !part.startsWith(`${name}=`));
+  kept.push(fresh);
+  return kept.join("; ");
+}
 
 function readState() {
   try {
@@ -788,6 +843,11 @@ function proxyHeaders(req, target, options = {}) {
   delete headers["sec-fetch-mode"];
   delete headers["sec-fetch-dest"];
   delete headers["sec-fetch-user"];
+  // dsh >= 0.2 added its own login wall in front of the loopback listener.
+  // Present a cookie signed with the harness secret for the rewritten authority.
+  const upstreamCookie = withUpstreamCookie(headers.cookie, target);
+  if (upstreamCookie) headers.cookie = upstreamCookie;
+  else delete headers.cookie;
   return headers;
 }
 
