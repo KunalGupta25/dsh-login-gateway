@@ -204,9 +204,9 @@ export function renderMarkdown(source) {
 
 export function markdownPreviewPage(name, source, rawHref) {
   const title = escapeHtml(name || "Markdown");
-  const raw = rawHref ? `<a href="${escapeHtml(rawHref)}">查看原文</a>` : "";
+  const raw = rawHref ? `<a href="${escapeHtml(rawHref)}">View Raw</a>` : "";
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -214,7 +214,7 @@ export function markdownPreviewPage(name, source, rawHref) {
   <style>
     :root { color-scheme: light dark; --bg:#f6f1e8; --card:#fffdf8; --text:#1c2430; --muted:#667085; --line:#d9d1c3; --accent:#8a5a12; --code:#eee6d6; --pre:#1e2430; --pre-text:#e8eef8; --quote:#fff6df; }
     @media (prefers-color-scheme: dark) {
-      :root { --bg:#10141c; --card:#171d28; --text:#e8eef8; --muted:#93a0b8; --line:#2b3344; --accent:#e2b56a; --code:#243044; --pre:#0d1118; --pre-text:#dbe4f3; --quote:#241c12; }
+      :root { --bg:#151517; --card:#1e1e22; --text:#f0f0f3; --muted:#95959e; --line:#2a2a2e; --accent:#e2b56a; --code:#222226; --pre:#111113; --pre-text:#ededf0; --quote:#1c1a16; }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }
@@ -254,16 +254,16 @@ export function markdownPreviewPage(name, source, rawHref) {
 }
 
 export function fileBrowserPage(current, parentHref, entries) {
-  const title = escapeHtml(current || "文件浏览");
-  const up = parentHref ? `<a href="${escapeHtml(parentHref)}">上级目录</a>` : "<span>已到允许的根目录</span>";
+  const title = escapeHtml(current || "File Browser");
+  const up = parentHref ? `<a href="${escapeHtml(parentHref)}">Parent Directory</a>` : "<span>Already at allowed root</span>";
   const rows = (entries || []).map((item) => {
     const href = escapeHtml(item.href);
     const name = escapeHtml(item.name);
-    const kind = item.dir ? "目录" : "文件";
+    const kind = item.dir ? "Dir" : "File";
     return `<a class="row" href="${href}"><span class="kind">${kind}</span><span class="name">${name}</span></a>`;
   }).join("");
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -271,7 +271,7 @@ export function fileBrowserPage(current, parentHref, entries) {
   <style>
     :root { color-scheme: light dark; --bg:#f6f1e8; --card:#fffdf8; --text:#1c2430; --muted:#667085; --line:#d9d1c3; --accent:#8a5a12; }
     @media (prefers-color-scheme: dark) {
-      :root { --bg:#10141c; --card:#171d28; --text:#e8eef8; --muted:#93a0b8; --line:#2b3344; --accent:#e2b56a; }
+      :root { --bg:#151517; --card:#1e1e22; --text:#f0f0f3; --muted:#95959e; --line:#2a2a2e; --accent:#e2b56a; }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }
@@ -290,8 +290,8 @@ export function fileBrowserPage(current, parentHref, entries) {
 <body>
   <div class="wrap">
     <div class="bar"><span>${title}</span>${up}</div>
-    <p class="hint">这是网关提供的文件浏览。点目录进入，点文件预览。官方竖屏插件的文件夹按钮本身没有接资源管理器。</p>
-    <div class="list">${rows || '<div class="row"><span class="name">这个目录是空的</span></div>'}</div>
+    <p class="hint">File browser provided by the gateway. Click directories to enter, files to preview. The official mobile plugin's folder button does not have a file explorer.</p>
+    <div class="list">${rows || '<div class="row"><span class="name">This directory is empty</span></div>'}</div>
   </div>
 </body>
 </html>`;

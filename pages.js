@@ -9,7 +9,7 @@ function escapeHtml(value) {
 }
 
 const PAGE_CSS = `
-  :root { --bg:#0b1020; --line:#2a3354; --text:#eef2ff; --muted:#93a0c4; --accent:#5b8cff; --danger:#ff7b8a; --card:#141a2e; --input:#0e1426; }
+  :root { --bg:#151517; --line:#2a2a2e; --text:#f0f0f3; --muted:#95959e; --accent:#5b8cff; --danger:#ff7b8a; --card:#1e1e22; --input:#19191d; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body { font-family: "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
@@ -18,6 +18,7 @@ const PAGE_CSS = `
   .sub, .hint, .readonly { color: var(--muted); font-size: 13px; line-height: 1.55; }
   label { display: block; margin: 14px 0 8px; color: var(--muted); font-size: 13px; }
   input, select { width: 100%; height: 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--input); color: var(--text); padding: 0 14px; }
+  input:focus, select:focus { outline: 2px solid #52525b; border-color: #71717a; }
   input[type="checkbox"] { width: 18px; height: 18px; }
   button { height: 46px; border: 0; border-radius: 12px; background: var(--accent); color: white; font-size: 15px; font-weight: 600; }
   .error { color: var(--danger); font-size: 13px; }
@@ -31,11 +32,11 @@ export function loginPage(basePath, error) {
   const action = escapeHtml(`${basePath}/login`);
   const message = error ? `<p class="error">${escapeHtml(error)}</p>` : "";
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>登录 · DeepSeek Harness</title>
+  <title>Login · DeepSeek Harness</title>
   <style>${PAGE_CSS}
     html, body { height: 100%; }
     body { display: grid; place-items: center; padding: 24px; }
@@ -47,14 +48,14 @@ export function loginPage(basePath, error) {
 <body>
   <div class="shell">
     <h1>DeepSeek Harness</h1>
-    <p class="sub">云端入口。登录后可在「设置 → 网关」里改账号或退出。</p>
+    <p class="sub">Login gateway. After login, change credentials or logout in Settings → Gateway.</p>
     <form class="card" method="post" action="${action}">
       ${message}
-      <label for="username">账号</label>
+      <label for="username">Username</label>
       <input id="username" name="username" autocomplete="username" required autofocus>
-      <label for="password">密码</label>
+      <label for="password">Password</label>
       <input id="password" name="password" type="password" autocomplete="current-password" required>
-      <button type="submit">登录</button>
+      <button type="submit">Login</button>
     </form>
   </div>
 </body>
@@ -78,20 +79,20 @@ export function settingsPage(options) {
   const message = error
     ? `<p class="banner error">${escapeHtml(error)}</p>`
     : saved
-      ? `<p class="banner ok">已保存。如果改了端口或路径，请用新地址重新打开。</p>`
+      ? `<p class="banner ok">Saved. If you changed the port or path, please reopen with the new address.</p>`
       : "";
   const urls = (publicUrls || []).map((url) => `<li><code>${escapeHtml(url)}</code></li>`).join("")
-    || "<li>当前没有检测到局域网 IPv4 地址</li>";
+    || "<li>No LAN IPv4 addresses detected</li>";
   const usernameDisabled = envLocked.username ? " disabled" : "";
   const passwordDisabled = envLocked.password ? " disabled" : "";
   const secure = values.secureCookie === true ? "true" : values.secureCookie === false ? "false" : "";
 
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>网关设置 · DeepSeek Harness</title>
+  <title>Gateway Settings · DeepSeek Harness</title>
   <style>
     :root {
       --text: #1a1d23;
@@ -103,7 +104,7 @@ export function settingsPage(options) {
       --accent: #2563eb;
       --danger: #b42318;
       --ok: #067647;
-      --overlay: rgba(15, 23, 42, 0.45);
+      --overlay: rgba(18, 18, 20, 0.55);
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -167,7 +168,7 @@ export function settingsPage(options) {
       color: var(--text);
       padding: 0 12px;
     }
-    input:focus, select:focus { outline: 2px solid #bfdbfe; border-color: var(--accent); }
+    input:focus, select:focus { outline: 2px solid #52525b; border-color: var(--accent); }
     input:disabled { opacity: 0.65; }
     .hint { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
     .section { margin: 18px 0 8px; font-size: 13px; font-weight: 650; }
@@ -219,79 +220,79 @@ export function settingsPage(options) {
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dsh-gw-title">
       <div class="head">
         <div>
-          <h1 id="dsh-gw-title">网关设置</h1>
-          <p>只保存在本机，不会写进插件包。Esc 或点击空白处关闭。</p>
+          <h1 id="dsh-gw-title">Gateway Settings</h1>
+          <p>Saved locally only, not written to the plugin package. Press Esc or click outside to close.</p>
         </div>
-        <button class="x" type="button" id="dsh-gw-close" aria-label="关闭">×</button>
+        <button class="x" type="button" id="dsh-gw-close" aria-label="Close">×</button>
       </div>
       ${message}
       <form method="post" action="${action}">
         <div class="body">
-          <div class="section">登录</div>
+          <div class="section">Login</div>
           <div class="grid">
             <div class="field">
-              <label for="username">账号</label>
+              <label for="username">Username</label>
               <input id="username" name="username" value="${escapeHtml(values.username || "")}" required${usernameDisabled}>
-              ${envLocked.username ? `<p class="hint">已由 DSH_CLOUD_USERNAME 锁定</p>` : ""}
+              ${envLocked.username ? `<p class="hint">Locked by DSH_CLOUD_USERNAME</p>` : ""}
             </div>
             <div class="field">
-              <label for="password">新密码</label>
-              <input id="password" name="password" type="password" autocomplete="new-password" placeholder="留空则不修改"${passwordDisabled}>
-              ${envLocked.password ? `<p class="hint">已由 DSH_CLOUD_PASSWORD 锁定</p>` : `<p class="hint">建议至少 8 位</p>`}
+              <label for="password">New Password</label>
+              <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Leave empty to keep current"${passwordDisabled}>
+              ${envLocked.password ? `<p class="hint">Locked by DSH_CLOUD_PASSWORD</p>` : `<p class="hint">At least 8 characters recommended</p>`}
             </div>
           </div>
 
-          <div class="section">监听</div>
+          <div class="section">Listen</div>
           <div class="grid">
             <div class="field">
-              <label for="listenHost">监听地址</label>
+              <label for="listenHost">Listen Address</label>
               <input id="listenHost" name="listenHost" value="${escapeHtml(values.listenHost || "0.0.0.0")}" required>
-              <p class="hint">公网用 0.0.0.0，本机调试用 127.0.0.1</p>
+              <p class="hint">Use 0.0.0.0 for public, 127.0.0.1 for localhost</p>
             </div>
             <div class="field">
-              <label for="listenPort">公网端口</label>
+              <label for="listenPort">Public Port</label>
               <input id="listenPort" name="listenPort" type="number" min="1" max="65535" value="${escapeHtml(values.listenPort)}" required>
-              <p class="hint">必须和 dsh web 端口不同</p>
+              <p class="hint">Must differ from dsh web port</p>
             </div>
             <div class="field wide">
-              <label for="basePath">访问路径</label>
+              <label for="basePath">Access Path</label>
               <input id="basePath" name="basePath" value="${escapeHtml(values.basePath || "/dsh")}" required>
             </div>
           </div>
 
-          <div class="section">反向代理</div>
+          <div class="section">Reverse Proxy</div>
           <div class="grid">
             <div class="field">
               <div class="check">
                 <input id="trustProxy" name="trustProxy" type="checkbox" value="1"${values.trustProxy ? " checked" : ""}>
-                <label for="trustProxy">信任反向代理</label>
+                <label for="trustProxy">Trust Reverse Proxy</label>
               </div>
-              <p class="hint">仅在前面有 Nginx / Caddy 时打开</p>
+              <p class="hint">Enable only if behind Nginx / Caddy</p>
             </div>
             <div class="field">
               <label for="secureCookie">Secure Cookie</label>
               <select id="secureCookie" name="secureCookie">
-                <option value=""${secure === "" ? " selected" : ""}>自动（仅 HTTPS）</option>
-                <option value="true"${secure === "true" ? " selected" : ""}>始终开启</option>
-                <option value="false"${secure === "false" ? " selected" : ""}>始终关闭</option>
+                <option value=""${secure === "" ? " selected" : ""}>Auto (HTTPS only)</option>
+                <option value="true"${secure === "true" ? " selected" : ""}>Always On</option>
+                <option value="false"${secure === "false" ? " selected" : ""}>Always Off</option>
               </select>
             </div>
             <div class="field wide">
-              <label for="cookiePath">Cookie 路径</label>
+              <label for="cookiePath">Cookie Path</label>
               <input id="cookiePath" name="cookiePath" value="${escapeHtml(values.cookiePath || "/")}">
             </div>
           </div>
 
           <div class="status">
-            <div>上游：<code>${escapeHtml(upstream)}</code></div>
-            <div>可尝试地址</div>
+            <div>Upstream: <code>${escapeHtml(upstream)}</code></div>
+            <div>Available Addresses</div>
             <ul>${urls}</ul>
-            <div>启动时请加 <code>--trusted-host</code>。80/443 需要把 /dsh、/assets、/plugins、/api 都反代过来。</div>
+            <div>Add <code>--trusted-host</code> at startup. For 80/443, proxy /dsh, /assets, /plugins, and /api.</div>
           </div>
         </div>
         <div class="foot">
-          <a href="${appHrefAttr}" id="dsh-gw-cancel">取消</a>
-          <button type="submit">保存</button>
+          <a href="${appHrefAttr}" id="dsh-gw-cancel">Cancel</a>
+          <button type="submit">Save</button>
         </div>
       </form>
     </div>
@@ -338,7 +339,7 @@ export function settingsHookHtml(settingsPath, logoutPath) {
 html[data-dsh-gw-light="1"]{color-scheme:light!important}
 html[data-dsh-gw-theme="cyberpunk"],html[data-dsh-gw-theme="dark"]{color-scheme:dark!important}
 #dsh-gw-wallpaper{position:fixed;inset:0;z-index:0;pointer-events:none;background:#111 center/cover no-repeat}
-#dsh-gw-wallpaper:after{content:"";position:absolute;inset:0;background:rgba(8,10,16,.4)}
+#dsh-gw-wallpaper:after{content:"";position:absolute;inset:0;background:rgba(18,18,20,.45)}
 html[data-dsh-gw-light="1"] #dsh-gw-wallpaper{background-color:#eef1f5}
 html[data-dsh-gw-light="1"] #dsh-gw-wallpaper:after{background:rgba(255,255,255,.42)}
 html[data-dsh-gw-bg="1"] body{background-color:transparent!important}
@@ -350,7 +351,7 @@ html[data-dsh-gw-bg="1"] body{background-color:transparent!important}
 #dsh-gw-theme .dsh-gw-lead{margin:0 0 8px}
 .dsh-gw-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .dsh-gw-chips button{height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));background:transparent;color:inherit;font-size:13px;cursor:pointer}
-.dsh-gw-chips button[aria-pressed="true"]{background:rgba(91,140,255,.18);border-color:rgba(91,140,255,.45)}
+.dsh-gw-chips button[aria-pressed="true"]{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.36)}
 #dsh-gw-bg-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 #dsh-gw-bg-actions button,#dsh-gw-bg-actions label{height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));background:transparent;color:inherit;font-size:13px;display:inline-flex;align-items:center;cursor:pointer}
 #dsh-gw-cyber-cube[data-dsh-gw-on="1"]{outline:2px solid #FCE300;outline-offset:2px}
@@ -403,16 +404,16 @@ html:not([data-dsh-gw-adapt="web"]) [data-dsh-gw-free-vision] input,html:not([da
 html[data-dsh-gw-adapt="mobile"] [class*="cubeRow"]{flex-direction:column!important}
 html[data-dsh-gw-adapt="mobile"] [class*="themeCube"]{flex:1 1 auto!important;width:100%!important}
 #dsh-gw-session-delete{color:#e5484d!important}
-#dsh-gw-session-dialog{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(8,10,18,.55)}
-#dsh-gw-session-dialog .dsh-gw-session-box{width:min(420px,100%);padding:22px 20px 16px;border-radius:16px;background:var(--dsw-alias-bg-primary,#141a2e);color:var(--dsw-alias-label-primary,#eef2ff);border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+#dsh-gw-session-dialog{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(18,18,20,.6)}
+#dsh-gw-session-dialog .dsh-gw-session-box{width:min(420px,100%);padding:22px 20px 16px;border-radius:16px;background:var(--dsw-alias-bg-primary,#1e1e22);color:var(--dsw-alias-label-primary,#f0f0f3);border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));box-shadow:0 18px 48px rgba(0,0,0,.28)}
 #dsh-gw-session-dialog h3{margin:0 0 10px;font-size:17px}
-#dsh-gw-session-dialog p{margin:0 0 16px;font-size:14px;line-height:1.55;color:var(--dsw-alias-label-secondary,#93a0c4)}
+#dsh-gw-session-dialog p{margin:0 0 16px;font-size:14px;line-height:1.55;color:var(--dsw-alias-label-secondary,#95959e)}
 #dsh-gw-session-dialog .dsh-gw-session-actions{display:flex;justify-content:flex-end;gap:10px}
 #dsh-gw-session-dialog button{height:40px;padding:0 16px;border:0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
 #dsh-gw-session-cancel{background:var(--dsw-alias-bg-secondary,rgba(127,127,127,.16));color:inherit}
 #dsh-gw-session-confirm{background:#e5484d;color:#fff}
 #dsh-gw-session-error{margin:12px 0 0;color:#e5484d;font-size:13px}
-#dsh-gw-approval-backdrop{position:fixed;inset:0;z-index:2147483600;background:rgba(8,10,16,.52)}
+#dsh-gw-approval-backdrop{position:fixed;inset:0;z-index:2147483600;background:rgba(18,18,20,.6)}
 html:not([data-dsh-gw-adapt="web"]) [data-approval-key]{position:fixed!important;left:12px!important;right:12px!important;bottom:max(16px,env(safe-area-inset-bottom))!important;z-index:2147483601!important;max-height:min(72vh,560px)!important;width:auto!important;margin:0!important;overflow:hidden!important}
 html:not([data-dsh-gw-adapt="web"]) [data-approval-key] [data-approval-scroll]{max-height:42vh!important;overflow:auto!important;-webkit-overflow-scrolling:touch}
 html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;left:12px!important;right:12px!important;bottom:max(16px,env(safe-area-inset-bottom))!important;z-index:2147483601!important;max-height:min(72vh,560px)!important;width:auto!important;margin:0!important}
@@ -467,8 +468,8 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var act = endsClass(cell, "_active");
     if (act) cell.classList.remove(act);
     var label = cell.querySelector('[class$="_navLabel"]');
-    if (label) label.textContent = "网关";
-    else cell.textContent = "网关";
+    if (label) label.textContent = "Gateway";
+    else cell.textContent = "Gateway";
     var icon = cell.querySelector("svg");
     if (icon) {
       icon.setAttribute("viewBox", "0 0 16 16");
@@ -507,7 +508,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     if (!panel) {
       panel = document.createElement("div");
       panel.id = PANEL_ID;
-      panel.innerHTML = '<h2>云端网关</h2><p class="dsh-gw-lead">账号、主题、适配和退出登录。</p><a id="dsh-gw-settings"><div><strong>网关设置</strong><span>改账号、密码、端口和反代</span></div><i>›</i></a><a id="dsh-gw-logout"><div><strong>退出登录</strong><span>清除当前浏览器的登录状态</span></div><i>›</i></a>';
+      panel.innerHTML = '<h2>Login Gateway</h2><p class="dsh-gw-lead">Account, theme, layout adaptation, and logout.</p><a id="dsh-gw-settings"><div><strong>Gateway Settings</strong><span>Change username, password, port, and proxy</span></div><i>›</i></a><a id="dsh-gw-logout"><div><strong>Logout</strong><span>Clear login session for this browser</span></div><i>›</i></a>';
       panel.querySelector("#dsh-gw-settings").href = SETTINGS;
       panel.querySelector("#dsh-gw-logout").href = LOGOUT;
       found.options.appendChild(panel);
@@ -558,7 +559,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var nodes = document.querySelectorAll("h3");
     for (var i = 0; i < nodes.length; i++) {
       var text = String(nodes[i].textContent || "");
-      if (text.indexOf("Free Vision") === -1 && text.indexOf("免费视觉") === -1) continue;
+      if (text.indexOf("Free Vision") === -1) continue;
       if (nodes[i].parentElement) nodes[i].parentElement.setAttribute("data-dsh-gw-free-vision", "1");
     }
   }
@@ -641,9 +642,9 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     for (var i = 0; i < cubes.length; i++) {
       if (cubes[i].id === "dsh-gw-cyber-cube") continue;
       var text = String(cubes[i].textContent || "");
-      var hit = (theme === "light" && (text.indexOf("浅色") !== -1 || /Light/i.test(text)))
-        || (theme === "dark" && (text.indexOf("深色") !== -1 || /Dark/i.test(text)))
-        || (theme === "system" && (text.indexOf("跟随") !== -1 || /System/i.test(text)));
+      var hit = (theme === "light" && /Light/i.test(text))
+        || (theme === "dark" && /Dark/i.test(text))
+        || (theme === "system" && /System/i.test(text));
       if (hit) {
         window.__dshGwThemeApplying = true;
         cubes[i].click();
@@ -719,25 +720,25 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     if (!themeBox) {
     var box = document.createElement("div");
     box.id = "dsh-gw-theme";
-    box.innerHTML = "<h3>主题管理</h3><p class=\\"dsh-gw-lead\\">浅色、深色和原来的夜之城互不覆盖，只启用当前这一套。</p>";
-    box.appendChild(chipRow("dsh-gw-theme-chips", [["light", "浅色"], ["dark", "深色"], ["system", "跟随系统"], ["cyberpunk", "夜之城"]], "data-dsh-gw-theme"));
+    box.innerHTML = "<h3>Theme Management</h3><p class=\\"dsh-gw-lead\\">Light, dark, and the classic Night City theme don't overlap—only the active one is enabled.</p>";
+    box.appendChild(chipRow("dsh-gw-theme-chips", [["light", "Light"], ["dark", "Dark"], ["system", "System"], ["cyberpunk", "Night City"]], "data-dsh-gw-theme"));
     var adaptTitle = document.createElement("h3");
-    adaptTitle.textContent = "界面适配";
+    adaptTitle.textContent = "Layout Adaptation";
     var adaptLead = document.createElement("p");
     adaptLead.className = "dsh-gw-lead";
-    adaptLead.textContent = "手机端强制竖屏适配，网页端保持电脑布局。改适配会刷新一次。";
+    adaptLead.textContent = "Force mobile portrait layout or keep desktop layout. Changing adaptation will refresh the page.";
     box.appendChild(adaptTitle);
     box.appendChild(adaptLead);
-    box.appendChild(chipRow("dsh-gw-adapt-chips", [["auto", "自动"], ["mobile", "手机端"], ["web", "网页端"]], "data-dsh-gw-adapt"));
+    box.appendChild(chipRow("dsh-gw-adapt-chips", [["auto", "Auto"], ["mobile", "Mobile"], ["web", "Desktop"]], "data-dsh-gw-adapt"));
     var bgTitle = document.createElement("h3");
-    bgTitle.textContent = "背景图";
+    bgTitle.textContent = "Background Image";
     var bgLead = document.createElement("p");
     bgLead.className = "dsh-gw-lead";
-    bgLead.textContent = "按手机全屏铺满。可和当前主题叠在一起。";
+    bgLead.textContent = "Full-screen on mobile. Can layer with current theme.";
     var actions = document.createElement("div");
     actions.id = "dsh-gw-bg-actions";
     var pick = document.createElement("label");
-    pick.textContent = "上传图片";
+    pick.textContent = "Upload Image";
     var file = document.createElement("input");
     file.type = "file";
     file.accept = "image/png,image/jpeg,image/webp,image/gif";
@@ -745,7 +746,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     pick.appendChild(file);
     var clear = document.createElement("button");
     clear.type = "button";
-    clear.textContent = "清除背景";
+    clear.textContent = "Clear Background";
     actions.appendChild(pick);
     actions.appendChild(clear);
     box.appendChild(bgTitle);
@@ -808,7 +809,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var cube = sample.cloneNode(true);
     cube.id = "dsh-gw-cyber-cube";
     cube.className = String(sample.className || "").replace(/selected/g, "").trim();
-    cube.textContent = "夜之城";
+    cube.textContent = "Night City";
     cube.addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -821,9 +822,9 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
       var target = event.target.closest("[class*='themeCube']");
       if (!target || target.id === "dsh-gw-cyber-cube") return;
       var text = String(target.textContent || "");
-      if (text.indexOf("浅色") !== -1 || /Light/i.test(text)) saveTheme({ theme: "light" }, false);
-      else if (text.indexOf("深色") !== -1 || /Dark/i.test(text)) saveTheme({ theme: "dark" }, false);
-      else if (text.indexOf("跟随") !== -1 || /System/i.test(text)) saveTheme({ theme: "system" }, false);
+      if (/Light/i.test(text)) saveTheme({ theme: "light" }, false);
+      else if (/Dark/i.test(text)) saveTheme({ theme: "dark" }, false);
+      else if (/System/i.test(text)) saveTheme({ theme: "system" }, false);
     }, true);
   }
 
@@ -999,19 +1000,19 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     box.setAttribute("role", "dialog");
     box.setAttribute("aria-modal", "true");
     var heading = document.createElement("h3");
-    heading.textContent = "删除会话";
+    heading.textContent = "Delete Session";
     var msg = document.createElement("p");
-    msg.textContent = "确定删除「" + (title || "这个会话") + "」吗？删除后无法恢复。";
+    msg.textContent = "Delete \"" + (title || "this session") + "\"? This cannot be undone.";
     var actions = document.createElement("div");
     actions.className = "dsh-gw-session-actions";
     var cancel = document.createElement("button");
     cancel.type = "button";
     cancel.id = "dsh-gw-session-cancel";
-    cancel.textContent = "取消";
+    cancel.textContent = "Cancel";
     var confirm = document.createElement("button");
     confirm.type = "button";
     confirm.id = "dsh-gw-session-confirm";
-    confirm.textContent = "删除";
+    confirm.textContent = "Delete";
     var error = document.createElement("p");
     error.id = "dsh-gw-session-error";
     actions.appendChild(cancel);
@@ -1027,12 +1028,12 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     cancel.addEventListener("click", closeDeleteDialog);
     confirm.addEventListener("click", function () {
       if (!sessionId) {
-        error.textContent = "找不到这个会话，请关掉菜单再试一次。";
+        error.textContent = "Session not found. Please close the menu and try again.";
         return;
       }
       cancel.disabled = true;
       confirm.disabled = true;
-      confirm.textContent = "正在删除…";
+      confirm.textContent = "Deleting…";
       error.textContent = "";
       var archive = window.__dshGwArchiveSession;
       var afterArchive = function () {
@@ -1051,8 +1052,8 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
           if (!result.res.ok || !result.data.ok) {
             cancel.disabled = false;
             confirm.disabled = false;
-            confirm.textContent = "删除";
-            error.textContent = result.data.reason === "not_found" ? "会话已经不在了。" : "删除失败，请稍后重试。";
+            confirm.textContent = "Delete";
+            error.textContent = result.data.reason === "not_found" ? "Session no longer exists." : "Delete failed. Please try again later.";
             return;
           }
           closeDeleteDialog();
@@ -1060,8 +1061,8 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
         }).catch(function () {
           cancel.disabled = false;
           confirm.disabled = false;
-          confirm.textContent = "删除";
-          error.textContent = "删除失败，请稍后重试。";
+          confirm.textContent = "Delete";
+          error.textContent = "Delete failed. Please try again later.";
         });
       };
       if (typeof archive === "function") {
@@ -1095,7 +1096,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
 
   function enhanceSessionMenu() {
     if (document.getElementById("dsh-gw-session-delete")) return;
-    var archive = menuItemByLabel("归档会话") || menuItemByLabel("Archive session");
+    var archive = menuItemByLabel("Archive session");
     if (!archive) return;
     var item = archive.closest('[role="menuitem"]') || archive;
     var menu = item.parentElement;
@@ -1104,7 +1105,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var btn = item.cloneNode(true);
     btn.id = "dsh-gw-session-delete";
     btn.removeAttribute("aria-checked");
-    setMenuLabel(btn, ["归档会话", "Archive session"], "删除会话");
+    setMenuLabel(btn, ["Archive session"], "Delete Session");
     btn.addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
