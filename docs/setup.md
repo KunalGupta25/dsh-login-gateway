@@ -1,13 +1,13 @@
 # 配置引导
 
-本页说明安装 `dsh-cloud-gateway` 之后怎么设账号、端口和反向代理。发布包里的 `cordis.patch.yml` 不带密码。
+本页说明安装 `dsh-login-gateway` 之后怎么设账号、端口和反向代理。发布包里的 `cordis.patch.yml` 不带密码。
 
 ## 第一次打开
 
 1. 确认已经执行：
 
    ```bash
-   dsh plugin --profile web add github:MrLukezy/dsh-cloud-gateway
+   dsh plugin --profile web add github:kunalgupta25/dsh-login-gateway
    dsh web --trusted-host YOUR_PUBLIC_IP --trusted-host your.example.com
    ```
 

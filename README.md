@@ -1,61 +1,63 @@
-# dsh-cloud-gateway
+# dsh-login-gateway
 
-## 介绍
+## Overview
 
-官方 `dsh web` 只监听本机 `127.0.0.1`，不能直接对公网开放。本插件在旁边开一个带账号密码的入口，登录后再反代到本地 DeepSeek Harness。
+Official `dsh web` only binds to localhost (`127.0.0.1`) and cannot be exposed directly to public networks. This plugin provides an authenticated entry point with a username/password login wall and reverse proxies authenticated traffic to your local DeepSeek Harness instance.
 
-适合已经把 Harness 装到云服务器、又希望用浏览器从外网进入工作台的人。安装后默认监听 `8080`，访问路径是 `/dsh`，避免和官方 Web 的 `3080` 抢端口。
+It is designed for deploying Harness on cloud servers while securely accessing the workspace via browser. By default, it listens on port `8080` under the `/dsh` path prefix to avoid conflicting with the default web port (`3080`).
 
-仓库 topic：`dsh-plugin`、`dsh-category-security`。发布包不含真实账号、密码、域名或公网 IP。凭据只写在你自己机器上。
+Repository topics: `dsh-plugin`, `dsh-category-security`. The distributed package contains no hardcoded credentials, domains, or public IPs; credentials are generated and stored exclusively on your host machine.
 
-English: a login wall and reverse proxy for cloud-deployed DeepSeek Harness.
+## Installation
 
-## 安装
-
-需要已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)。
+Requires [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
 ```bash
-dsh plugin --profile web add github:MrLukezy/dsh-cloud-gateway
+dsh plugin --profile web add github:kunalgupta25/dsh-login-gateway
 dsh web --trusted-host YOUR_PUBLIC_IP --trusted-host your.example.com
 ```
 
-浏览器打开：
+Access in your browser:
 
 ```text
 http://YOUR_PUBLIC_IP:8080/dsh
 ```
 
-本地目录也可以：`dsh plugin --profile web add ./dsh-cloud-gateway`。
-
-## 手机访问
-
-本插件只提供登录和反代，不改官方桌面布局。手机竖屏打开会挤，侧栏也不好用。
-
-如果主要用手机进云端工作台，建议和社区竖屏插件 [dsh-web-mobile](https://github.com/mexiaosqwq/dsh-web-mobile) 一起装，两个插件可以放在同一个 `web` profile：
+To install from a local path:
 
 ```bash
-dsh plugin --profile web add github:MrLukezy/dsh-cloud-gateway
+dsh plugin --profile web add ./dsh-login-gateway
+```
+
+## Mobile Access
+
+This plugin focuses on authentication and proxying and preserves the official desktop layout. 
+
+If you primarily access your workspace from a mobile browser, consider pairing it with the community portrait layout plugin [dsh-web-mobile](https://github.com/mexiaosqwq/dsh-web-mobile) in the same `web` profile:
+
+```bash
+dsh plugin --profile web add github:kunalgupta25/dsh-login-gateway
 dsh plugin --profile web add github:mexiaosqwq/dsh-web-mobile
 dsh web --trusted-host YOUR_PUBLIC_IP --trusted-host your.example.com
 ```
 
-`dsh-cloud-gateway` 负责公网登录，`dsh-web-mobile`（包名 `@dsh-external/dsh-mobile-nav`）负责窄屏抽屉、会话全宽和设置页适配。电脑宽屏布局基本不变。
+`dsh-login-gateway` manages authentication and routing, while `dsh-web-mobile` (package name `@dsh-external/dsh-mobile-nav`) provides mobile drawers, full-width chat layouts, and touch-adapted settings without affecting desktop displays.
 
-## 配置引导
+## Quick Start & Configuration
 
-完整步骤、字段说明和 Nginx 示例见 [docs/setup.md](docs/setup.md)。最短路径：
+For full setup instructions, configuration fields, and Nginx configurations, see [docs/setup.md](docs/setup.md).
 
-1. 没自己设密码时，到 `dsh web` 日志里找 `generated login`。
-2. 登录后打开 **设置 → 网关**，再点 **网关设置**，改账号、密码、端口和是否信任反代。也可以在同一页退出登录。
-3. 启动命令必须带 `--trusted-host`，否则登录后接口会被官方围栏拦住。
-4. 前面如果有 Nginx，打开「信任反向代理」，并把 `/dsh`、`/assets/`、`/plugins/`、`/api`、`/dsh-image-gen`、`/query-balance` 都反代到网关。
-5. 浏览器拖入 PDF、Markdown 等非图片文件时，网关会保存到服务器，并在输入框插入 `@文件名` 引用；png/jpeg/webp/gif 仍走官方图片附件栏。
+1. **Initial Credentials**: If a password was not preconfigured, find the generated credentials in the `dsh web` console output labeled `generated login`.
+2. **Gateway Settings**: After logging in, navigate to **Settings → Gateway** and click **Gateway Settings** to change username, password, port, and proxy options. You can also log out from this panel.
+3. **Trusted Hosts**: The startup command must include `--trusted-host <host>`, or official API endpoints will reject incoming traffic.
+4. **Reverse Proxy / Nginx**: If placing Nginx or Caddy in front, enable "Trust Reverse Proxy" and proxy `/dsh`, `/assets/`, `/plugins/`, `/api`, `/dsh-image-gen`, and `/query-balance` to the gateway port.
+5. **Document Drops**: Dragging non-image documents (PDF, Markdown, text) into the browser uploads them to the server and inserts `@filename` references directly into the input prompt. Standard image attachments (PNG, JPEG, WebP, GIF) continue through the native media bar.
 
-## 文档
+## Documentation
 
-- [配置引导](docs/setup.md)
+- [Setup Guide](docs/setup.md)
 
-## 开发
+## Development
 
 ```bash
 npm install
