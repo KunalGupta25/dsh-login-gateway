@@ -1,6 +1,6 @@
 {
-  "name": "dsh-cloud-gateway",
-  "version": "0.3.24",
+  "name": "dsh-login-gateway",
+  "version": "0.1.1",
   "description": "Login wall and public gateway for DeepSeek Harness cloud deploys.",
   "type": "module",
   "main": "index.js",
@@ -27,15 +27,15 @@
   "scripts": {
     "test": "node smoke-test.mjs"
   },
-  "author": "MrLukezy",
+  "author": "kunalgupta25",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MrLukezy/dsh-cloud-gateway.git"
+    "url": "git+https://github.com/kunalgupta25/dsh-login-gateway.git"
   },
   "bugs": {
-    "url": "https://github.com/MrLukezy/dsh-cloud-gateway/issues"
+    "url": "https://github.com/kunalgupta25/dsh-login-gateway/issues"
   },
-  "homepage": "https://github.com/MrLukezy/dsh-cloud-gateway#readme",
+  "homepage": "https://github.com/kunalgupta25/dsh-login-gateway#readme",
   "license": "MIT",
   "engines": {
     "node": ">=18"

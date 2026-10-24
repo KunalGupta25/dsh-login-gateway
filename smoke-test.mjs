@@ -6,7 +6,7 @@ import fs from "node:fs";
 import { EventEmitter } from "node:events";
 import { apply, registerUploadRoute, resolveOpenFile } from "./index.js";
 
-process.env.DSH_HOME = path.join(os.tmpdir(), "dsh-cloud-gateway-smoke");
+process.env.DSH_HOME = path.join(os.tmpdir(), "dsh-login-gateway-smoke");
 
 const seen = { host: "", origin: "", site: "", upgradeConnection: "", upgradeHost: "" };
 const upstream = http.createServer((req, res) => {

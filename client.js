@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: "dsh-cloud-gateway",
+  id: "dsh-login-gateway",
   factory: (require) => {
     const module = { exports: {} };
     const exports = module.exports;
@@ -54,7 +54,7 @@ window.__ModuleLoader__.load({
 
     function mentionBlock(files) {
       const tokens = files.map((file) => `@${file.token}`).join(" ");
-      return `请阅读 ${tokens}`;
+      return `Please read ${tokens}`;
     }
 
     function openFileInBrowser(filePath, token) {
@@ -89,22 +89,22 @@ window.__ModuleLoader__.load({
       if (title && String(title).trim()) return String(title).trim().slice(0, 80);
       const crumb = document.querySelector("[class*='titleCluster'], [class*='_crumb']");
       const text = crumb && crumb.textContent ? crumb.textContent.trim() : "";
-      return (text || "对话").slice(0, 80);
+      return (text || "Conversation").slice(0, 80);
     }
 
     function isDomRunning() {
       if (document.querySelector('[data-state="running"]')) return true;
-      return Boolean(document.querySelector('[aria-label="停止生成"], [aria-label="Stop generating"]'));
+      return Boolean(document.querySelector('[aria-label="Stop generating"]'));
     }
 
     function notifyConversationDone(title) {
-      const text = String(title || "对话").slice(0, 80);
+      const text = String(title || "Conversation").slice(0, 80);
       if (window.DshApp && typeof window.DshApp.conversationDone === "function") {
         window.DshApp.conversationDone(text);
         return;
       }
       if (document.hidden && window.Notification && Notification.permission === "granted") {
-        new Notification("对话已完成", { body: text, silent: false });
+        new Notification("Conversation Complete", { body: text, silent: false });
       }
     }
 
@@ -120,7 +120,7 @@ window.__ModuleLoader__.load({
       const buttons = document.querySelectorAll("button");
       for (const button of buttons) {
         const text = String(button.textContent || "").trim();
-        if ((text === "加载更早" || text === "Load earlier") && !button.disabled) return button;
+        if ((text === "Load Earlier" || text === "Load earlier") && !button.disabled) return button;
       }
       return null;
     }
@@ -250,7 +250,7 @@ window.__ModuleLoader__.load({
     }
 
     const plugin = {
-      name: "dsh-cloud-gateway-client",
+      name: "dsh-login-gateway-client",
       inject: ["slots"],
       apply(ctx) {
         const slots = ctx.slots || (ctx.get && ctx.get("slots"));
@@ -281,7 +281,7 @@ window.__ModuleLoader__.load({
               actions.setDraft(`${prefix}${mentionBlock(files)}`);
               window.dispatchEvent(new CustomEvent("dsh-uploads-changed"));
             }).catch((error) => {
-              console.error("[dsh-cloud-gateway] document drop failed", error);
+              console.error("[dsh-login-gateway] document drop failed", error);
             });
           };
           const onEscape = (event) => {

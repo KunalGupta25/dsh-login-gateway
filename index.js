@@ -7,7 +7,7 @@ import Schema from "@deepseek-ai/schemastery";
 import { loginPage, settingsPage, settingsHookHtml } from "./pages.js";
 import { markdownPreviewPage, fileBrowserPage } from "./markdown.js";
 
-export const name = "dsh-cloud-gateway";
+export const name = "dsh-login-gateway";
 export const inject = ["webStartup", "workspaceRegistry"];
 
 const COOKIE = "dsh_gw";
@@ -31,17 +31,17 @@ const UUID_POLYFILL = `<script>(function(){try{var c=globalThis.crypto;if(!c||ty
 const THEME_BOOT_SCRIPT = `<script>(function(){try{var t=localStorage.getItem("dsh-gw-theme")||"";var a=localStorage.getItem("dsh-gw-adapt")||"auto";var h=document.documentElement;if(t)h.setAttribute("data-dsh-gw-theme",t);h.setAttribute("data-dsh-gw-adapt",a||"auto");if(t==="light"){h.setAttribute("data-dsh-gw-light","1");h.style.colorScheme="light";}if(t==="dark"||t==="cyberpunk"){h.setAttribute("data-dsh-gw-light","0");h.style.colorScheme="dark";}if(a!=="mobile"&&a!=="web")return;var raw=window.matchMedia.bind(window);var width=a==="mobile"?390:1280;window.matchMedia=function(q){var m=raw(q);var max=/max-width:\\s*(\\d+)px/i.exec(String(q||""));var min=/min-width:\\s*(\\d+)px/i.exec(String(q||""));if(!max&&!min)return m;var ok=true;if(max&&width>Number(max[1]))ok=false;if(min&&width<Number(min[1]))ok=false;return{matches:ok,media:q,onchange:null,addListener:function(){},removeListener:function(){},addEventListener:function(){},removeEventListener:function(){},dispatchEvent:function(){return false;}};};}catch(e){}})();</script>`;
 
 export const Config = Schema.object({
-  listenHost: Schema.string().default("0.0.0.0").description("公网监听地址。云服务器用 0.0.0.0，本机调试可用 127.0.0.1"),
-  listenPort: Schema.number().min(1).max(65535).default(8080).description("公网端口，必须和 dsh web 不同。默认 8080，避免和官方 3080 冲突"),
-  basePath: Schema.string().default("/dsh").description("浏览器访问前缀，例如 /dsh"),
-  username: Schema.string().default("admin").description("登录账号。也可用环境变量 DSH_CLOUD_USERNAME"),
-  password: Schema.string().role("secret").description("登录密码。留空则首次启动生成并写入本机 state 文件；也可用 DSH_CLOUD_PASSWORD"),
-  secret: Schema.string().role("secret").description("会话 HMAC 密钥。留空则持久化生成"),
-  upstreamHost: Schema.string().description("本机 Harness 地址，默认 webStartup.host"),
-  upstreamPort: Schema.number().min(1).max(65535).description("本机 Harness 端口，默认 webStartup.port"),
-  trustProxy: Schema.boolean().default(false).description("仅在前面有 Nginx/Caddy 时打开，才会信任 X-Forwarded-*"),
-  secureCookie: Schema.boolean().description("强制 Secure Cookie。留空则仅 HTTPS 请求带 Secure"),
-  cookiePath: Schema.string().default("/").description("Cookie 路径。站点根路径还有 /assets /plugins /api 时保持 /"),
+  listenHost: Schema.string().default("0.0.0.0").description("Public listen address. Use 0.0.0.0 for cloud servers, 127.0.0.1 for localhost debugging"),
+  listenPort: Schema.number().min(1).max(65535).default(8080).description("Public port, must differ from dsh web. Default 8080 to avoid conflict with official 3080"),
+  basePath: Schema.string().default("/dsh").description("Browser access prefix, e.g. /dsh"),
+  username: Schema.string().default("admin").description("Login username. Can also use environment variable DSH_CLOUD_USERNAME"),
+  password: Schema.string().role("secret").description("Login password. Leave empty to generate on first startup and save to local state file; can also use DSH_CLOUD_PASSWORD"),
+  secret: Schema.string().role("secret").description("Session HMAC secret. Leave empty to generate and persist"),
+  upstreamHost: Schema.string().description("Local Harness address, defaults to webStartup.host"),
+  upstreamPort: Schema.number().min(1).max(65535).description("Local Harness port, defaults to webStartup.port"),
+  trustProxy: Schema.boolean().default(false).description("Enable only when behind Nginx/Caddy to trust X-Forwarded-* headers"),
+  secureCookie: Schema.boolean().description("Force Secure Cookie. Leave empty to enable only for HTTPS requests"),
+  cookiePath: Schema.string().default("/").description("Cookie path. Keep / if site root has /assets /plugins /api"),
 });
 
 function normalizeBasePath(value) {
@@ -247,7 +247,7 @@ function saveUploadFile(dir, name, bytes) {
   const manifest = readUploadManifest(dir);
   const token = uniqueUploadToken(dir, name, manifest);
   const abs = path.resolve(dir, token);
-  if (!abs.startsWith(`${path.resolve(dir)}${path.sep}`)) throw new Error("非法文件名");
+  if (!abs.startsWith(`${path.resolve(dir)}${path.sep}`)) throw new Error("Invalid filename");
   fs.writeFileSync(abs, bytes);
   manifest[token] = { name, path: abs, token, ts: Date.now() };
   writeUploadManifest(dir, manifest);
@@ -276,14 +276,14 @@ export function registerUploadRoute(ctx) {
       req.on("error", () => {
         if (!res.headersSent) {
           res.writeHead(400, { "content-type": "application/json; charset=utf-8" });
-          res.end(JSON.stringify({ error: "读取请求体失败" }));
+          res.end(JSON.stringify({ error: "Failed to read request body" }));
         }
       });
       req.on("end", () => {
         if (overflow) {
           if (!res.headersSent) {
             res.writeHead(413, { "content-type": "application/json; charset=utf-8" });
-            res.end(JSON.stringify({ error: "文件过大" }));
+            res.end(JSON.stringify({ error: "File too large" }));
           }
           return;
         }
@@ -291,9 +291,9 @@ export function registerUploadRoute(ctx) {
           const payload = JSON.parse(Buffer.concat(chunks).toString("utf8"));
           const name = safeUploadName(payload?.name);
           const base64 = String(payload?.base64 || "");
-          if (!base64) throw new Error("缺少文件数据");
+          if (!base64) throw new Error("Missing file data");
           const bytes = Buffer.from(base64, "base64");
-          if (!bytes.length) throw new Error("文件为空");
+          if (!bytes.length) throw new Error("File is empty");
           const saved = saveUploadFile(dir, name, bytes);
           res.writeHead(200, { "content-type": "application/json; charset=utf-8" });
           res.end(JSON.stringify(saved));
@@ -304,7 +304,7 @@ export function registerUploadRoute(ctx) {
       });
     },
   });
-  console.log(`[dsh-cloud-gateway] upload route /api/dsh-gw-upload -> ${dir}`);
+  console.log(`[dsh-login-gateway] upload route /api/dsh-gw-upload -> ${dir}`);
 }
 
 const SECRET_BASENAMES = new Set([
@@ -583,7 +583,7 @@ function serveThemeBackground(req, res) {
     const payload = JSON.parse(raw || "{}");
     const bytes = Buffer.from(String(payload.base64 || ""), "base64");
     const type = sniffImageType(bytes);
-    if (!type) throw new Error("只支持 png / jpg / webp / gif");
+    if (!type) throw new Error("Only png / jpg / webp / gif supported");
     fs.writeFileSync(themeBgFile(), bytes);
     const state = readState();
     writeState({
@@ -592,7 +592,7 @@ function serveThemeBackground(req, res) {
     });
     jsonReply(res, 200, readThemeSettings());
   }).catch((error) => {
-    jsonReply(res, 400, { ok: false, error: error instanceof Error ? error.message : "上传失败" });
+    jsonReply(res, 400, { ok: false, error: error instanceof Error ? error.message : "Upload failed" });
   });
 }
 
@@ -650,7 +650,7 @@ function serveBrowse(req, res) {
     const dir = resolveBrowseDir(openFileHostCtx, url.searchParams.get("path"));
     if (!dir) {
       res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-      res.end("目录不存在或无权浏览");
+      res.end("Directory not found or access denied");
       return;
     }
     const roots = collectAllowedRoots(openFileHostCtx);
@@ -698,7 +698,7 @@ function serveBrowse(req, res) {
     res.end(html);
   } catch {
     if (!res.headersSent) res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
-    if (!res.writableEnded) res.end("浏览目录失败");
+    if (!res.writableEnded) res.end("Failed to browse directory");
   }
 }
 
@@ -713,7 +713,7 @@ function serveOpenFile(req, res) {
     const found = resolveOpenFile(openFileHostCtx, url.searchParams.get("path"), url.searchParams.get("token"));
     if (!found) {
       res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-      res.end("文件不存在或无权打开");
+      res.end("File not found or access denied");
       return;
     }
     const raw = url.searchParams.get("raw") === "1";
@@ -753,13 +753,13 @@ function serveOpenFile(req, res) {
     stream.pipe(res);
   } catch {
     if (!res.headersSent) res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
-    if (!res.writableEnded) res.end("打开文件失败");
+    if (!res.writableEnded) res.end("Failed to open file");
   }
 }
 
 export function registerFileOpenRoute(webCtx, hostCtx) {
   openFileHostCtx = hostCtx || openFileHostCtx;
-  console.log("[dsh-cloud-gateway] file open route /api/dsh-gw-file");
+  console.log("[dsh-login-gateway] file open route /api/dsh-gw-file");
 }
 
 function parseBody(req, limit = LOGIN_BODY_LIMIT) {
@@ -992,7 +992,7 @@ function startGateway(options) {
       proxyRes.on("end", () => {
         if (overflow) {
           res.writeHead(502, { "content-type": "text/plain; charset=utf-8" });
-          res.end("上游页面过大");
+          res.end("Upstream page too large");
           return;
         }
         const headers = outboundHeaders(proxyRes.headers);
@@ -1009,10 +1009,10 @@ function startGateway(options) {
       });
     });
     proxyReq.on("error", (err) => {
-      console.error("[dsh-cloud-gateway] proxy error", err.message);
+      console.error("[dsh-login-gateway] proxy error", err.message);
       if (!res.headersSent) {
         res.writeHead(502, { "content-type": "text/plain; charset=utf-8" });
-        res.end("上游 DeepSeek Harness 暂时不可用");
+        res.end("Upstream DeepSeek Harness temporarily unavailable");
       } else {
         res.destroy();
       }
@@ -1124,14 +1124,14 @@ function startGateway(options) {
     if (pathname === settingsPath && req.method === "POST") {
       if (!sessionUser(req)) {
         res.writeHead(401, { "content-type": "text/plain; charset=utf-8" });
-        res.end("未登录");
+        res.end("Not logged in");
         return;
       }
       let params;
       try {
         params = new URLSearchParams(await parseBody(req));
       } catch {
-        sendSettings(res, { error: "请求过大" });
+        sendSettings(res, { error: "Request too large" });
         return;
       }
       let saved;
@@ -1147,7 +1147,7 @@ function startGateway(options) {
           cookiePath: params.get("cookiePath") || "/",
         });
       } catch (error) {
-        sendSettings(res, { error: error.message || "保存失败" });
+        sendSettings(res, { error: error.message || "Save failed" });
         return;
       }
       sendSettings(res, {
@@ -1161,7 +1161,7 @@ function startGateway(options) {
     if (pathname === loginPath && req.method === "POST") {
       const ip = clientIp(req, trustProxy);
       if (tooMany(ip)) {
-        sendLogin(res, "尝试次数过多，请 10 分钟后再试");
+        sendLogin(res, "Too many attempts. Please try again in 10 minutes");
         return;
       }
       let params;
@@ -1169,13 +1169,13 @@ function startGateway(options) {
         params = new URLSearchParams(await parseBody(req));
       } catch {
         res.writeHead(413, { "content-type": "text/plain; charset=utf-8" });
-        res.end("请求过大");
+        res.end("Request too large");
         return;
       }
       const user = (params.get("username") || "").trim();
       const pass = params.get("password") || "";
       if (user !== username || !verifyPassword(pass, passwordHash)) {
-        sendLogin(res, "账号或密码错误");
+        sendLogin(res, "Invalid username or password");
         return;
       }
       const token = sign({ u: user, exp: Date.now() + MAX_AGE * 1000 });
@@ -1196,7 +1196,7 @@ function startGateway(options) {
         return;
       }
       res.writeHead(401, { "content-type": "text/plain; charset=utf-8" });
-      res.end("未登录");
+      res.end("Not logged in");
       return;
     }
 
@@ -1241,9 +1241,9 @@ function startGateway(options) {
     server.once("error", reject);
     server.listen(listenPort, listenHost, () => {
       const urls = guessPublicUrls(listenPort, basePath);
-      console.log(`[dsh-cloud-gateway] login wall on http://${listenHost}:${listenPort}${basePath} -> ${upstream}`);
-      console.log(`[dsh-cloud-gateway] after login, open ${basePath}/settings to configure username, password, port, and proxy options`);
-      for (const url of urls) console.log(`[dsh-cloud-gateway] try ${url}`);
+      console.log(`[dsh-login-gateway] login wall on http://${listenHost}:${listenPort}${basePath} -> ${upstream}`);
+      console.log(`[dsh-login-gateway] after login, open ${basePath}/settings to configure username, password, port, and proxy options`);
+      for (const url of urls) console.log(`[dsh-login-gateway] try ${url}`);
       resolve(server);
     });
   });
@@ -1275,7 +1275,7 @@ function resolveCredentials(config) {
       generated = true;
     }
   } else if (password.length < 8) {
-    console.warn("[dsh-cloud-gateway] configured password is shorter than 8 characters");
+    console.warn("[dsh-login-gateway] configured password is shorter than 8 characters");
   }
 
   const secret = config.secret || state.secret || crypto.randomBytes(32).toString("hex");
@@ -1288,11 +1288,11 @@ function resolveCredentials(config) {
   writeState(nextState);
 
   if (generated) {
-    console.log(`[dsh-cloud-gateway] generated login ${username} / ${password}`);
-    console.log(`[dsh-cloud-gateway] credentials stored in ${statePath()}`);
-    console.log("[dsh-cloud-gateway] after login, open 网关设置 to change this password");
+    console.log(`[dsh-login-gateway] generated login ${username} / ${password}`);
+    console.log(`[dsh-login-gateway] credentials stored in ${statePath()}`);
+    console.log("[dsh-login-gateway] after login, open Gateway Settings to change this password");
   } else if (!configured) {
-    console.log(`[dsh-cloud-gateway] using generated credentials from ${statePath()}`);
+    console.log(`[dsh-login-gateway] using generated credentials from ${statePath()}`);
   }
 
   return { username, password, secret };
@@ -1339,18 +1339,18 @@ function buildGatewayOptions(ctx, config, handlers) {
 }
 
 function persistVisualSettings(patch, upstreamPort) {
-  if (!patch.username) throw new Error("账号不能为空");
-  if (!patch.listenHost) throw new Error("监听地址不能为空");
+  if (!patch.username) throw new Error("Username cannot be empty");
+  if (!patch.listenHost) throw new Error("Listen address cannot be empty");
   const listenPort = Number(patch.listenPort);
   if (!Number.isInteger(listenPort) || listenPort < 1 || listenPort > 65535) {
-    throw new Error("公网端口无效");
+    throw new Error("Invalid public port");
   }
   if (listenPort === Number(upstreamPort)) {
-    throw new Error(`公网端口不能和本机 dsh web 端口 ${upstreamPort} 相同`);
+    throw new Error(`Public port cannot be the same as local dsh web port ${upstreamPort}`);
   }
   const basePath = normalizeBasePath(patch.basePath || "/dsh");
   if (patch.password && patch.password.length < 8) {
-    console.warn("[dsh-cloud-gateway] configured password is shorter than 8 characters");
+    console.warn("[dsh-login-gateway] configured password is shorter than 8 characters");
   }
 
   const state = readState();
@@ -1416,7 +1416,7 @@ export function apply(ctx, config = {}) {
         }
         runtime.server = started;
       }).catch((error) => {
-        console.error("[dsh-cloud-gateway] failed to listen", error);
+        console.error("[dsh-login-gateway] failed to listen", error);
       });
     };
     if (current) current.close(() => boot());

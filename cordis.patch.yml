@@ -1,5 +1,5 @@
 - insert:
-    - id: cloud-gateway
-      name: dsh-cloud-gateway
+    - id: login-gateway
+      name: dsh-login-gateway
       inject:
         - webStartup
