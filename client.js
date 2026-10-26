@@ -94,7 +94,7 @@ window.__ModuleLoader__.load({
 
     function isDomRunning() {
       if (document.querySelector('[data-state="running"]')) return true;
-      return Boolean(document.querySelector('[aria-label="Stop generating"]'));
+      return Boolean(document.querySelector('[aria-label="停止生成"], [aria-label="Stop generating"]'));
     }
 
     function notifyConversationDone(title) {
@@ -120,7 +120,7 @@ window.__ModuleLoader__.load({
       const buttons = document.querySelectorAll("button");
       for (const button of buttons) {
         const text = String(button.textContent || "").trim();
-        if ((text === "Load Earlier" || text === "Load earlier") && !button.disabled) return button;
+        if ((text === "加载更早" || text === "Load earlier") && !button.disabled) return button;
       }
       return null;
     }

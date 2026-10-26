@@ -214,7 +214,7 @@ export function markdownPreviewPage(name, source, rawHref) {
   <style>
     :root { color-scheme: light dark; --bg:#f6f1e8; --card:#fffdf8; --text:#1c2430; --muted:#667085; --line:#d9d1c3; --accent:#8a5a12; --code:#eee6d6; --pre:#1e2430; --pre-text:#e8eef8; --quote:#fff6df; }
     @media (prefers-color-scheme: dark) {
-      :root { --bg:#151517; --card:#1e1e22; --text:#f0f0f3; --muted:#95959e; --line:#2a2a2e; --accent:#e2b56a; --code:#222226; --pre:#111113; --pre-text:#ededf0; --quote:#1c1a16; }
+      :root { --bg:#10141c; --card:#171d28; --text:#e8eef8; --muted:#93a0b8; --line:#2b3344; --accent:#e2b56a; --code:#243044; --pre:#0d1118; --pre-text:#dbe4f3; --quote:#241c12; }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }
@@ -271,7 +271,7 @@ export function fileBrowserPage(current, parentHref, entries) {
   <style>
     :root { color-scheme: light dark; --bg:#f6f1e8; --card:#fffdf8; --text:#1c2430; --muted:#667085; --line:#d9d1c3; --accent:#8a5a12; }
     @media (prefers-color-scheme: dark) {
-      :root { --bg:#151517; --card:#1e1e22; --text:#f0f0f3; --muted:#95959e; --line:#2a2a2e; --accent:#e2b56a; }
+      :root { --bg:#10141c; --card:#171d28; --text:#e8eef8; --muted:#93a0b8; --line:#2b3344; --accent:#e2b56a; }
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; }

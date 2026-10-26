@@ -172,7 +172,7 @@ console.log({
   settingsForm: settingsHtml.includes("name=\"listenPort\""),
   settingsModal: settingsHtml.includes("dsh-gw-overlay") && settingsHtml.includes("Escape"),
   saved: saved.status,
-  savedOk: savedHtml.includes("已保存"),
+  savedOk: savedHtml.includes("Saved."),
   api: api.status,
   filePage: filePage.status,
   filePassthrough: fileHtml.includes("# hello md") && !fileHtml.includes("dsh-gw-hook"),

@@ -9,7 +9,7 @@ function escapeHtml(value) {
 }
 
 const PAGE_CSS = `
-  :root { --bg:#151517; --line:#2a2a2e; --text:#f0f0f3; --muted:#95959e; --accent:#5b8cff; --danger:#ff7b8a; --card:#1e1e22; --input:#19191d; }
+  :root { --bg:#0b1020; --line:#2a3354; --text:#eef2ff; --muted:#93a0c4; --accent:#5b8cff; --danger:#ff7b8a; --card:#141a2e; --input:#0e1426; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body { font-family: "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
@@ -18,7 +18,6 @@ const PAGE_CSS = `
   .sub, .hint, .readonly { color: var(--muted); font-size: 13px; line-height: 1.55; }
   label { display: block; margin: 14px 0 8px; color: var(--muted); font-size: 13px; }
   input, select { width: 100%; height: 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--input); color: var(--text); padding: 0 14px; }
-  input:focus, select:focus { outline: 2px solid #52525b; border-color: #71717a; }
   input[type="checkbox"] { width: 18px; height: 18px; }
   button { height: 46px; border: 0; border-radius: 12px; background: var(--accent); color: white; font-size: 15px; font-weight: 600; }
   .error { color: var(--danger); font-size: 13px; }
@@ -104,7 +103,7 @@ export function settingsPage(options) {
       --accent: #2563eb;
       --danger: #b42318;
       --ok: #067647;
-      --overlay: rgba(18, 18, 20, 0.55);
+      --overlay: rgba(15, 23, 42, 0.45);
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -168,7 +167,7 @@ export function settingsPage(options) {
       color: var(--text);
       padding: 0 12px;
     }
-    input:focus, select:focus { outline: 2px solid #52525b; border-color: var(--accent); }
+    input:focus, select:focus { outline: 2px solid #bfdbfe; border-color: var(--accent); }
     input:disabled { opacity: 0.65; }
     .hint { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
     .section { margin: 18px 0 8px; font-size: 13px; font-weight: 650; }
@@ -339,7 +338,7 @@ export function settingsHookHtml(settingsPath, logoutPath) {
 html[data-dsh-gw-light="1"]{color-scheme:light!important}
 html[data-dsh-gw-theme="cyberpunk"],html[data-dsh-gw-theme="dark"]{color-scheme:dark!important}
 #dsh-gw-wallpaper{position:fixed;inset:0;z-index:0;pointer-events:none;background:#111 center/cover no-repeat}
-#dsh-gw-wallpaper:after{content:"";position:absolute;inset:0;background:rgba(18,18,20,.45)}
+#dsh-gw-wallpaper:after{content:"";position:absolute;inset:0;background:rgba(8,10,16,.4)}
 html[data-dsh-gw-light="1"] #dsh-gw-wallpaper{background-color:#eef1f5}
 html[data-dsh-gw-light="1"] #dsh-gw-wallpaper:after{background:rgba(255,255,255,.42)}
 html[data-dsh-gw-bg="1"] body{background-color:transparent!important}
@@ -351,7 +350,7 @@ html[data-dsh-gw-bg="1"] body{background-color:transparent!important}
 #dsh-gw-theme .dsh-gw-lead{margin:0 0 8px}
 .dsh-gw-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .dsh-gw-chips button{height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));background:transparent;color:inherit;font-size:13px;cursor:pointer}
-.dsh-gw-chips button[aria-pressed="true"]{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.36)}
+.dsh-gw-chips button[aria-pressed="true"]{background:rgba(91,140,255,.18);border-color:rgba(91,140,255,.45)}
 #dsh-gw-bg-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 #dsh-gw-bg-actions button,#dsh-gw-bg-actions label{height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));background:transparent;color:inherit;font-size:13px;display:inline-flex;align-items:center;cursor:pointer}
 #dsh-gw-cyber-cube[data-dsh-gw-on="1"]{outline:2px solid #FCE300;outline-offset:2px}
@@ -404,16 +403,16 @@ html:not([data-dsh-gw-adapt="web"]) [data-dsh-gw-free-vision] input,html:not([da
 html[data-dsh-gw-adapt="mobile"] [class*="cubeRow"]{flex-direction:column!important}
 html[data-dsh-gw-adapt="mobile"] [class*="themeCube"]{flex:1 1 auto!important;width:100%!important}
 #dsh-gw-session-delete{color:#e5484d!important}
-#dsh-gw-session-dialog{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(18,18,20,.6)}
-#dsh-gw-session-dialog .dsh-gw-session-box{width:min(420px,100%);padding:22px 20px 16px;border-radius:16px;background:var(--dsw-alias-bg-primary,#1e1e22);color:var(--dsw-alias-label-primary,#f0f0f3);border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+#dsh-gw-session-dialog{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:rgba(8,10,18,.55)}
+#dsh-gw-session-dialog .dsh-gw-session-box{width:min(420px,100%);padding:22px 20px 16px;border-radius:16px;background:var(--dsw-alias-bg-primary,#141a2e);color:var(--dsw-alias-label-primary,#eef2ff);border:1px solid var(--dsw-alias-border-l1,rgba(127,127,127,.28));box-shadow:0 18px 48px rgba(0,0,0,.28)}
 #dsh-gw-session-dialog h3{margin:0 0 10px;font-size:17px}
-#dsh-gw-session-dialog p{margin:0 0 16px;font-size:14px;line-height:1.55;color:var(--dsw-alias-label-secondary,#95959e)}
+#dsh-gw-session-dialog p{margin:0 0 16px;font-size:14px;line-height:1.55;color:var(--dsw-alias-label-secondary,#93a0c4)}
 #dsh-gw-session-dialog .dsh-gw-session-actions{display:flex;justify-content:flex-end;gap:10px}
 #dsh-gw-session-dialog button{height:40px;padding:0 16px;border:0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
 #dsh-gw-session-cancel{background:var(--dsw-alias-bg-secondary,rgba(127,127,127,.16));color:inherit}
 #dsh-gw-session-confirm{background:#e5484d;color:#fff}
 #dsh-gw-session-error{margin:12px 0 0;color:#e5484d;font-size:13px}
-#dsh-gw-approval-backdrop{position:fixed;inset:0;z-index:2147483600;background:rgba(18,18,20,.6)}
+#dsh-gw-approval-backdrop{position:fixed;inset:0;z-index:2147483600;background:rgba(8,10,16,.52)}
 html:not([data-dsh-gw-adapt="web"]) [data-approval-key]{position:fixed!important;left:12px!important;right:12px!important;bottom:max(16px,env(safe-area-inset-bottom))!important;z-index:2147483601!important;max-height:min(72vh,560px)!important;width:auto!important;margin:0!important;overflow:hidden!important}
 html:not([data-dsh-gw-adapt="web"]) [data-approval-key] [data-approval-scroll]{max-height:42vh!important;overflow:auto!important;-webkit-overflow-scrolling:touch}
 html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;left:12px!important;right:12px!important;bottom:max(16px,env(safe-area-inset-bottom))!important;z-index:2147483601!important;max-height:min(72vh,560px)!important;width:auto!important;margin:0!important}
@@ -559,7 +558,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var nodes = document.querySelectorAll("h3");
     for (var i = 0; i < nodes.length; i++) {
       var text = String(nodes[i].textContent || "");
-      if (text.indexOf("Free Vision") === -1) continue;
+      if (text.indexOf("Free Vision") === -1 && text.indexOf("免费视觉") === -1) continue;
       if (nodes[i].parentElement) nodes[i].parentElement.setAttribute("data-dsh-gw-free-vision", "1");
     }
   }
@@ -642,9 +641,9 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     for (var i = 0; i < cubes.length; i++) {
       if (cubes[i].id === "dsh-gw-cyber-cube") continue;
       var text = String(cubes[i].textContent || "");
-      var hit = (theme === "light" && /Light/i.test(text))
-        || (theme === "dark" && /Dark/i.test(text))
-        || (theme === "system" && /System/i.test(text));
+      var hit = (theme === "light" && (text.indexOf("浅色") !== -1 || /Light/i.test(text)))
+        || (theme === "dark" && (text.indexOf("深色") !== -1 || /Dark/i.test(text)))
+        || (theme === "system" && (text.indexOf("跟随") !== -1 || /System/i.test(text)));
       if (hit) {
         window.__dshGwThemeApplying = true;
         cubes[i].click();
@@ -720,7 +719,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     if (!themeBox) {
     var box = document.createElement("div");
     box.id = "dsh-gw-theme";
-    box.innerHTML = "<h3>Theme Management</h3><p class=\\"dsh-gw-lead\\">Light, dark, and the classic Night City theme don't overlap—only the active one is enabled.</p>";
+    box.innerHTML = "<h3>Theme Management</h3><p class=\\"dsh-gw-lead\\">Light, dark, and the classic Night City theme do not overlap. Only the active one is enabled.</p>";
     box.appendChild(chipRow("dsh-gw-theme-chips", [["light", "Light"], ["dark", "Dark"], ["system", "System"], ["cyberpunk", "Night City"]], "data-dsh-gw-theme"));
     var adaptTitle = document.createElement("h3");
     adaptTitle.textContent = "Layout Adaptation";
@@ -822,9 +821,9 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
       var target = event.target.closest("[class*='themeCube']");
       if (!target || target.id === "dsh-gw-cyber-cube") return;
       var text = String(target.textContent || "");
-      if (/Light/i.test(text)) saveTheme({ theme: "light" }, false);
-      else if (/Dark/i.test(text)) saveTheme({ theme: "dark" }, false);
-      else if (/System/i.test(text)) saveTheme({ theme: "system" }, false);
+      if (text.indexOf("浅色") !== -1 || /Light/i.test(text)) saveTheme({ theme: "light" }, false);
+      else if (text.indexOf("深色") !== -1 || /Dark/i.test(text)) saveTheme({ theme: "dark" }, false);
+      else if (text.indexOf("跟随") !== -1 || /System/i.test(text)) saveTheme({ theme: "system" }, false);
     }, true);
   }
 
@@ -1096,7 +1095,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
 
   function enhanceSessionMenu() {
     if (document.getElementById("dsh-gw-session-delete")) return;
-    var archive = menuItemByLabel("Archive session");
+    var archive = menuItemByLabel("归档会话") || menuItemByLabel("Archive session");
     if (!archive) return;
     var item = archive.closest('[role="menuitem"]') || archive;
     var menu = item.parentElement;
@@ -1105,7 +1104,7 @@ html[data-dsh-gw-adapt="mobile"] [data-approval-key]{position:fixed!important;le
     var btn = item.cloneNode(true);
     btn.id = "dsh-gw-session-delete";
     btn.removeAttribute("aria-checked");
-    setMenuLabel(btn, ["Archive session"], "Delete Session");
+    setMenuLabel(btn, ["归档会话", "Archive session"], "Delete Session");
     btn.addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();

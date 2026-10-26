@@ -31,7 +31,7 @@ dsh plugin --profile web add ./dsh-login-gateway
 
 ## Mobile Access
 
-This plugin focuses on authentication and proxying and preserves the official desktop layout. 
+This plugin focuses on authentication and proxying and preserves the official desktop layout.
 
 If you primarily access your workspace from a mobile browser, consider pairing it with the community portrait layout plugin [dsh-web-mobile](https://github.com/mexiaosqwq/dsh-web-mobile) in the same `web` profile:
 
